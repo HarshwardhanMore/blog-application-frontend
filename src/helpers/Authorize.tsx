@@ -1,21 +1,24 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getToken } from "./Auth";
+import { getSession, getToken } from "./Auth";
 import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  session: any;
 }
 
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
+  session: {},
 });
 
 export const Authorize: any = ({ children }: any) => {
   const router = useRouter();
   const token = getToken();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
+  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     if (!token) {
@@ -29,8 +32,14 @@ export const Authorize: any = ({ children }: any) => {
     }
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    setSession(getSession());
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, setIsAuthenticated, session }}
+    >
       {children}
     </AuthContext.Provider>
   );

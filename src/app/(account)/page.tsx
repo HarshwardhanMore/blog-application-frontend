@@ -19,7 +19,8 @@ import {
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { getToken } from "@/helpers/Auth";
+import { getSession, getToken } from "@/helpers/Auth";
+import { useAuth } from "@/helpers/Authorize";
 
 // const data = [
 //   {
@@ -176,27 +177,51 @@ export default function Home() {
   const initialValues = { title: "", description: "" };
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
-  const [sort, setSort] = useState(1);
+  const [sort, setSort] = useState(3);
   const [blogForm, setBlogForm] = useState(initialValues);
+  const [activity, setActivity] = useState<any>([]);
+  const [authors, setAuthors] = useState<any>([]);
+
+  const { session } = useAuth();
 
   const accessToken = getToken();
 
-  // const postsBlogData = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:3000/api/blog/create", {...blogForm, createdByUserId : } // need user id from access token session
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       }
-  //     );
-  //     setData(response?.data?.data);
-  //     setFilteredData(response?.data?.data);
-  //   } catch (error: any) {
-  //     toast.error(error.message);
-  //   }
-  // };
+  const postsBlogData = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/blog/create",
+        { ...blogForm, createdByUserId: session?.id },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      // if (response.status == 200 && response?.data?.error == false) {
+      //   toast.success(response?.data?.message);
+      // } else {
+      //   toast.error(response?.data?.message);
+      // }
+      return response;
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (blogForm?.title != "" && blogForm?.description != "") {
+      const response = postsBlogData();
+      setBlogForm(initialValues);
+      await getBlogsData();
+      toast.promise(response, {
+        loading: "Publishing Blog...",
+        success: <p>Blog Published!</p>,
+        error: <p>Could not publish the blog.</p>,
+      });
+    } else {
+      toast.error("Please fill details!");
+    }
+  };
   const getBlogsData = async () => {
     try {
       const response = await axios.get(
@@ -213,27 +238,70 @@ export default function Home() {
       toast.error(error.message);
     }
   };
+  const getMyActivity = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/auth/getMyActivity",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setActivity(response?.data?.data);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const getUniqueAuthors = () => {
+    // Initialize an empty array to store unique author names
+    const uniqueAuthors: string[] = [];
+
+    // Iterate through each object in the data array
+
+    data.map((blog: any) => {
+      // Concatenate firstname and lastname to form the full name
+      const fullName = `${blog.createdByUser.firstname} ${blog.createdByUser.lastname}`;
+
+      // Check if the full name already exists in the uniqueAuthors array
+      if (!uniqueAuthors.includes(fullName)) {
+        // If not, add it to the uniqueAuthors array
+        uniqueAuthors.push(fullName);
+      }
+    });
+
+    setAuthors(uniqueAuthors);
+  };
 
   useEffect(() => {
-    getBlogsData();
+    const fetchData = async () => {
+      await getBlogsData();
+      await getMyActivity();
+    };
+
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    getUniqueAuthors(); // Call getUniqueAuthors when data changes
+  }, [data]);
 
   const sortByCreatedAtAsc = () => {
     setFilteredData(
-      [...data].sort((a: any, b: any) => {
+      [...filteredData].sort((a: any, b: any) => {
         return (
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       })
     );
   };
 
-  // Function to sort data by created_at in descending order
   const sortByCreatedAtDesc = () => {
     setFilteredData(
-      [...data].sort((a: any, b: any) => {
+      [...filteredData].sort((a: any, b: any) => {
         return (
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );
       })
     );
@@ -250,27 +318,30 @@ export default function Home() {
 
   // Function to search data by author (assuming author information is available)
   const searchByAuthor = (searchTerm: any) => {
-    setFilteredData(
-      data.filter(
-        (item: any) =>
-          `${item.createdByUser?.firstname} ${item.createdByUser?.lastname}`.toLowerCase() ==
-          searchTerm?.toLowerCase()
-      )
-    );
-  };
-
-  const handleSubmit = () => {
-    console.log(blogForm);
-    setBlogForm(initialValues);
+    if (searchTerm == "") {
+      setFilteredData(data);
+    } else {
+      setFilteredData(
+        data.filter(
+          (item: any) =>
+            `${item.createdByUser?.firstname} ${item.createdByUser?.lastname}`.toLowerCase() ==
+            searchTerm?.toLowerCase()
+        )
+      );
+    }
   };
 
   useEffect(() => {
     if (sort == 1) {
       sortByCreatedAtAsc();
-    } else {
+    } else if (sort == 2) {
       sortByCreatedAtDesc();
+    } else {
+      setFilteredData(data);
     }
   }, [sort]);
+
+  // console.log(getSession());
 
   return (
     <main className="w-full flex flex-col">
@@ -278,9 +349,22 @@ export default function Home() {
         <section className="w-full px-[25px] sm:px-0 sm:w-[300px] md:w-[500px] xl:w-[750px]">
           {filteredData?.map((item: any, index: number) => {
             const createdAt = convertDate(item?.createdAt);
+
+            const isBlogLikedByUser = activity?.likes?.some(
+              (like: any) => parseInt(like.blogId) == parseInt(item.id)
+            );
+
+            // console.log("isBlogLikedByUser :::", isBlogLikedByUser);
             return (
               <>
-                <BlogCard key={index} data={{ ...item, createdAt }} />
+                <BlogCard
+                  key={item?.id}
+                  data={{
+                    ...item,
+                    createdAt,
+                  }}
+                  isBlogLikedByUser={isBlogLikedByUser}
+                />
                 <div className="w-full h-[1px] bg-primary opacity-35 mt-7 mb-4"></div>
               </>
             );
@@ -324,7 +408,29 @@ export default function Home() {
                   }}
                   className="hidden"
                 /> */}
-                  Oldest Blogs
+                  Oldest
+                </label>
+                <label
+                  htmlFor=""
+                  className={`flex-grow px-5 py-2 cursor-pointer text-sm text-center ${
+                    sort == 3
+                      ? "text-light bg-primary"
+                      : "text-dark bg-gray-50 "
+                  }`}
+                  onClick={() => {
+                    setSort(3);
+                  }}
+                >
+                  {/* <input
+                  type="radio"
+                  name="sort"
+                  value={1}
+                  onChange={(e: any) => {
+                    setSort(e.target.value); // Use e.target.value to get the value
+                  }}
+                  className="hidden"
+                /> */}
+                  Shufle
                 </label>
                 <label
                   htmlFor=""
@@ -346,7 +452,7 @@ export default function Home() {
                   }}
                   className="hidden"
                 /> */}
-                  Latest Blogs
+                  Latest
                 </label>
               </div>
 
@@ -358,16 +464,13 @@ export default function Home() {
                   searchByAuthor(e.target.value);
                 }}
               >
-                <option value="" disabled selected>
+                <option value="" selected>
                   Author
                 </option>
-                {data?.map((item: any, index: number) => {
+                {authors?.map((item: any, index: number) => {
                   return (
-                    <option
-                      key={index}
-                      value={`${item?.createdByUser?.firstname} ${item?.createdByUser?.lastname}`}
-                    >
-                      {`${item?.createdByUser?.firstname} ${item?.createdByUser?.lastname}`}
+                    <option key={index} value={item}>
+                      {item}
                     </option>
                   );
                 })}
@@ -376,7 +479,7 @@ export default function Home() {
                 className="px-5 pt-2 cursor-pointer text-sm text-primary bg-transparent flex gap-x-1 items-center"
                 onClick={() => {
                   setFilteredData(data);
-                  setSort(1);
+                  setSort(3);
                 }}
                 type="reset"
               >
@@ -436,27 +539,68 @@ export default function Home() {
                 <h2 className="font-semibold">My Blogs</h2>
                 <UserRound size={16} />
               </div>
-              {data.map(
-                (blog: any, index: number) =>
-                  index == 0 && (
-                    <div
-                      key={blog?.id}
-                      className="w-full flex flex-col items-start bg-gradient-to-br bg-[#fff6e7] rounded-lg p-5"
-                    >
-                      <h2 className="text-xl font-bold mb-1 text-primary">
-                        {blog?.title}
-                      </h2>
-                      <div className=" mb-2.5">
-                        <p className="text-sm text-gray-700">
-                          {blog?.description}
-                        </p>
+              {data
+                .filter((item: any) => {
+                  return item?.createdByUserId == session?.id;
+                })
+                .map(
+                  (blog: any, index: number) =>
+                    index == 0 && (
+                      <div
+                        key={blog?.id}
+                        className="w-full flex flex-col items-start bg-gradient-to-br bg-[#fff6e7] rounded-lg p-5"
+                      >
+                        <h2 className="text-xl font-bold mb-1 text-primary">
+                          <Link
+                            href={{
+                              pathname: `/${blog?.title}`,
+                              query: { blogid: blog?.id },
+                            }}
+                          >
+                            {blog?.title}
+                          </Link>
+                        </h2>
+                        <div className=" mb-2.5">
+                          <p className="text-sm text-gray-700">
+                            {blog?.description}
+                          </p>
+                        </div>
+                        <div className="flex w-full gap-x-5 mt-2.5">
+                          <span className="text-sm flex gap-x-1 items-center">
+                            <ThumbsUp
+                              size={20}
+                              strokeWidth={1}
+                              color="#f1b143"
+                              fill="#f1b143"
+                            />
+                            <span className="self-end text-primary">
+                              {blog?.countOfLikes}
+                            </span>
+                          </span>
+                          <span className="text-sm flex gap-x-1 items-center">
+                            <MessageCircle
+                              size={20}
+                              strokeWidth={1}
+                              color="#f1b143"
+                              fill="#f1b143"
+                            />
+                            <span className="self-end text-primary">
+                              {blog?.countOfComments}
+                            </span>
+                          </span>
+                          <span className="text-sm flex gap-x-1 items-center">
+                            <Send
+                              size={20}
+                              strokeWidth={1}
+                              color="#f1b143"
+                              fill="#f1b143"
+                            />
+                            <span className="self-end text-primary">10</span>
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex w-full gap-x-5 mt-2.5">
-                        {/* Likes, comments, and other content */}
-                      </div>
-                    </div>
-                  )
-              )}
+                    )
+                )}
               <Link
                 href={"/my-blogs"}
                 className="text-sm text-primary self-center cursor-pointer flex items-center"

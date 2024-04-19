@@ -1,4 +1,5 @@
 import * as jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode"; // import dependency
 
 export const getToken = () => {
   return localStorage.getItem("token");
@@ -26,6 +27,29 @@ export const validateUser = () => {
 
       console.log("Internal server error");
     }
+  }
+};
+
+export const getSession = () => {
+  const token = getToken();
+  if (token) {
+    try {
+      // Decode the token
+      // const decodedToken = jwt_decode(token);
+
+      // const decodedToken = jwt.verify(token!, "us-harshwardhanmore");
+      const decodedToken = jwtDecode(token);
+
+      // Access user ID from the decoded token payload
+      // const userId = decodedToken.user.id;
+
+      // console.log("User ID : ", decodedToken);
+      return decodedToken;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  } else {
+    console.error("Authentication token not found in local storage.");
   }
 };
 

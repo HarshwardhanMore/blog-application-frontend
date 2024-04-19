@@ -182,8 +182,9 @@ export default function Home() {
   const [sort, setSort] = useState(1);
   const [blogForm, setBlogForm] = useState(initialValues);
   const [filtersVisibility, setFiltersVisibility] = useState(false);
+  const [likedBlogs, setLikedBlogs] = useState({});
+  const [activity, setActivity] = useState<any>([]);
 
-  
   const accessToken = getToken();
 
   const getBlogsData = async () => {
@@ -204,10 +205,25 @@ export default function Home() {
     }
   };
 
+  const getMyActivity = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/auth/getMyActivity",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setActivity(response?.data?.data);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
   useEffect(() => {
     getBlogsData();
+    getMyActivity();
   }, []);
-
 
   const sortByCreatedAtAsc = (data: any[]) => {
     return [...data].sort((a, b) => {
@@ -346,10 +362,16 @@ export default function Home() {
 
         <section className="w-full px-[25px] sm:px-0 sm:w-[550px] md:w-[700px] lg:w-[750px]">
           {filteredData?.map((item: any, index: number) => {
-            const created_at = convertDate(item?.created_at);
+            const createdAt = convertDate(item?.createdAt);
+            const isBlogLikedByUser = activity?.likes?.some(
+              (like: any) => like.blogId === item.id
+            );
             return (
               <>
-                <BlogCard key={index} data={{ ...item, created_at }} />
+                <BlogCard
+                  key={index}
+                  data={{ ...item, createdAt, isBlogLikedByUser }}
+                />
                 <div className="w-full h-[1px] bg-primary opacity-35 mt-7 mb-4"></div>
               </>
             );
