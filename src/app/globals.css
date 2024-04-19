@@ -2,7 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+input:focus,
+textarea:focus {
+  outline: none !important;
+}
+
+* {
+  --primary: #f1b143;
+  --dark: #2b2c34;
+  --light: #ffffff;
+
+  color: var(--dark);
+}
+
+body::-webkit-scrollbar {
+  width: 10px;               /* width of the entire scrollbar */
+}
+body::-webkit-scrollbar-track {
+  background: transparent;        /* color of the tracking area */
+}
+body::-webkit-scrollbar-thumb {
+  background-color: var(--primary);
+}
+
+/* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -30,4 +53,4 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
