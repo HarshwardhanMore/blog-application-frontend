@@ -346,32 +346,40 @@ export default function Home() {
   return (
     <main className="w-full flex flex-col">
       <main className="w-full flex-1 flex flex-col sm:flex-row justify-center py-10">
-        <section className="w-full px-[25px] sm:px-0 sm:w-[300px] md:w-[500px] xl:w-[750px]">
-          {filteredData?.map((item: any, index: number) => {
-            const createdAt = convertDate(item?.createdAt);
+        {filteredData.length > 0 ? (
+          <section className="w-full px-[25px] sm:px-0 sm:w-[300px] md:w-[500px] xl:w-[700px]">
+            {filteredData?.map((item: any, index: number) => {
+              const createdAt = convertDate(item?.createdAt);
 
-            const isBlogLikedByUser = activity?.likes?.some(
-              (like: any) => parseInt(like.blogId) == parseInt(item.id)
-            );
+              const isBlogLikedByUser = activity?.likes?.some(
+                (like: any) => parseInt(like.blogId) == parseInt(item.id)
+              );
 
-            // console.log("isBlogLikedByUser :::", isBlogLikedByUser);
-            return (
-              <>
-                <BlogCard
-                  key={item?.id}
-                  data={{
-                    ...item,
-                    createdAt,
-                  }}
-                  isBlogLikedByUser={isBlogLikedByUser}
-                />
-                <div className="w-full h-[1px] bg-primary opacity-35 mt-7 mb-4"></div>
-              </>
-            );
-          })}
-        </section>
-        <div className="w-[1px] bg-primary opacity-35 mx-10 "></div>
-        <section className="w-full px-[25px] sm:px-0 sm:w-[250px] xl:w-[400px] flex flex-col items-start">
+              // console.log("isBlogLikedByUser :::", isBlogLikedByUser);
+              return (
+                <>
+                  <BlogCard
+                    key={item?.id}
+                    data={{
+                      ...item,
+                      createdAt,
+                      isBlogLikedByUser,
+                    }}
+                  />
+                  {/* <div className="w-full h-[1px] bg-primary opacity-35 mt-7 mb-4"></div> */}
+                </>
+              );
+            })}
+          </section>
+        ) : (
+          <div className="w-full text-center text-gray-300 px-[25px] sm:px-0 sm:w-[550px] md:w-[700px] xl:w-[700px]">
+            {data.length > 0
+              ? `No Result Found!`
+              : `No One Has Published Blogs Yet.!`}
+          </div>
+        )}
+        <div className="w-[1px] bg-[#f1b14359] opacity-35 mx-10 "></div>
+        <section className="w-full px-[25px] sm:px-0 sm:w-[250px] xl:w-[350px] flex flex-col items-start">
           <div className="w-full flex flex-col items-start gap-y-5">
             <div className="flex gap-x-1 items-center self-start">
               <h2 className="font-semibold">Filters</h2>
@@ -399,15 +407,6 @@ export default function Home() {
                     setSort(2);
                   }}
                 >
-                  {/* <input
-                  type="radio"
-                  name="sort"
-                  value={2}
-                  onChange={(e: any) => {
-                    setSort(e.target.value); // Use e.target.value to get the value
-                  }}
-                  className="hidden"
-                /> */}
                   Oldest
                 </label>
                 <label
@@ -421,15 +420,6 @@ export default function Home() {
                     setSort(3);
                   }}
                 >
-                  {/* <input
-                  type="radio"
-                  name="sort"
-                  value={1}
-                  onChange={(e: any) => {
-                    setSort(e.target.value); // Use e.target.value to get the value
-                  }}
-                  className="hidden"
-                /> */}
                   Shufle
                 </label>
                 <label
@@ -443,15 +433,6 @@ export default function Home() {
                     setSort(1);
                   }}
                 >
-                  {/* <input
-                  type="radio"
-                  name="sort"
-                  value={1}
-                  onChange={(e: any) => {
-                    setSort(e.target.value); // Use e.target.value to get the value
-                  }}
-                  className="hidden"
-                /> */}
                   Latest
                 </label>
               </div>

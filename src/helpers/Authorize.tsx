@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getSession, getToken } from "./Auth";
-import { useRouter } from "next/navigation";
+import { checkSessionExpired, getSession, getToken } from "./Auth";
+import { redirect, useRouter } from "next/navigation";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -19,6 +19,15 @@ export const Authorize: any = ({ children }: any) => {
   const token = getToken();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!token);
   const [session, setSession] = useState<any>(null);
+  const [isSessionExpired, setIsSessionExpired] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsSessionExpired(checkSessionExpired()!);
+    if (isSessionExpired) {
+      setIsAuthenticated(false);
+      // redirect("/login");
+    }
+  }, [isSessionExpired]);
 
   useEffect(() => {
     if (!token) {

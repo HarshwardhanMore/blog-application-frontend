@@ -53,6 +53,31 @@ export const getSession = () => {
   }
 };
 
+export const checkSessionExpired = () => {
+  const token = getToken();
+  if (token) {
+    try {
+      const decodedToken: any = jwtDecode(token);
+
+      const sessionStartDate = new Date(decodedToken?.date);
+      const currentTime = new Date();
+
+      // Calculate the difference in milliseconds between the session start date and the current time
+      const timeDifference = currentTime.getTime() - sessionStartDate.getTime();
+
+      // Convert milliseconds to hours
+      const hoursDifference = timeDifference / (1000 * 60 * 60);
+
+      // If the difference is greater than 1 hour, return true indicating session expiration
+      return hoursDifference > 1;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  } else {
+    console.error("Authentication token not found in local storage.");
+  }
+};
+
 export const deleteToken = () => {
   localStorage.removeItem("token");
 };

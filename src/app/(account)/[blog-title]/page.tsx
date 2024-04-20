@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSearchParams } from "next/navigation";
+import User from "@/components/User";
 
 interface Blog {
   id: number;
@@ -127,8 +128,6 @@ const Page = () => {
     }
   };
 
-  
-
   useEffect(() => {
     if (blogid) {
       getBlogsData();
@@ -155,7 +154,6 @@ const Page = () => {
       toast.error(error.message);
     }
   };
-
 
   const handleSumbit = () => {
     if (newComment != "") {
@@ -191,7 +189,8 @@ const Page = () => {
             <div className="w-full flex items-center justify-between text-sm mb-2.5">
               <span className="flex items-center gap-x-1">
                 <span>
-                  <CircleUserRound size={30} strokeWidth={1} color="black" />
+                  {/* <CircleUserRound size={30} strokeWidth={1} color="black" /> */}
+                  <User size="medium" />
                 </span>
                 <span className="font-normal text-dark">
                   {data &&

@@ -106,10 +106,13 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="w-full space-y-10 bg-light px-10 py-10 rounded-xl">
-      <div className="text-center space-y-1">
-        <h2 className="text-2xl font-semibold">Register Here</h2>
-        <p className="px-5 text-sm text-gray-500">
+    <div className="w-full space-y-10 bg-light px-5 sm:px-10 py-10 rounded-xl">
+      <div className="text-center space-y-1">        
+        <div className="flex items-center gap-x-1 w-full justify-center">
+          <img src="/appendix-star.png" alt="" className="h-8" />
+          <h2 className="text-2xl font-semibold">Register Here</h2>
+        </div>
+        <p className="px-5 text-xs sm:text-sm text-gray-500">
           Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iure a alias
           rerum, aliquam consequuntur nostrum.
         </p>
@@ -221,19 +224,19 @@ const RegisterPage = () => {
         </div>
       </div>
       <div className="w-full flex justify-between items-center gap-y-1">
-        <button className="py-2 text-sm text-primary font-light flex items-center justify-center">
+        <button className="py-2 text-xs sm:text-sm text-primary font-light flex items-center justify-center">
           Need Help?&nbsp;
           {/* <ChevronRight size={16} color="white" /> */}
         </button>
         <button
           onClick={handleSubmit}
-          className="rounded-full px-6 py-2.5 text-xs font-semibold bg-primary text-light flex items-center justify-center"
+          className="rounded-full px-4 sm:px-6 py-2.5 text-xs font-semibold bg-primary text-light flex items-center justify-center"
         >
           Register&nbsp;
           <LogIn size={14} color="white" />
         </button>
         <button
-          className="py-2 text-sm font-light text-primary flex items-center justify-center"
+          className="py-2 text-xs sm:text-sm font-light text-primary flex items-center justify-center"
           onClick={redirectToLoginPage}
         >
           Login&nbsp;

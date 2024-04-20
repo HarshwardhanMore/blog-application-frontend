@@ -1,22 +1,29 @@
-import { CircleUserRound, MessageCircle, Send, ThumbsUp } from "lucide-react";
+import {
+  CircleUserRound,
+  MessageCircle,
+  Send,
+  ThumbsUp,
+  Trash2,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { getToken } from "@/helpers/Auth";
-
-const BlogCard = ({ data, isBlogLikedByUser }: any) => {
+import User from "@/components/User";
+const BlogCard = ({ data }: any) => {
   // console.log("BlogCard :: ", data?.isBlogLikedByUser);
   // console.log("BlogCard type :: ", typeof data?.isBlogLikedByUser);
   const [blogLiked, setBlogLiked] = useState(false);
+  const [blogVisibility, setBlogVisibility] = useState(true);
 
-  if (data) {
-    console.log(" blogLiked : ", isBlogLikedByUser);
-  }
+  // if (data) {
+  //   console.log(" blogLiked : ", data?.isBlogLikedByUser);
+  // }
 
   useEffect(() => {
-    setBlogLiked(isBlogLikedByUser);
-  }, [isBlogLikedByUser]);
+    setBlogLiked(data?.isBlogLikedByUser);
+  }, [data?.isBlogLikedByUser]);
 
   const accessToken = getToken();
 
@@ -52,11 +59,50 @@ const BlogCard = ({ data, isBlogLikedByUser }: any) => {
     }
   };
 
+  const deleteBlog = async (id: any) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/blog/delete",
+        {
+          id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.status === 200 && response?.data?.error == false) {
+        setBlogVisibility(false);
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const onClickShare = (title: any, id: any) => {
+    const url = window.location.href;
+    const titleUrl = title.split(" ").join("%20");
+    const blogIdUrl = `?blogid=${id}`;
+
+    navigator.clipboard.writeText(url + titleUrl + blogIdUrl);
+
+    toast.success("Share link has been copied to clipboard!");
+  };
+
   return (
-    <div className="w-full flex flex-col items-start">
+    <div
+      className={`w-full flex-col items-start border-b border-[#f1b14359] pb-6 mb-4 ${
+        !blogVisibility ? "hidden" : "flex"
+      }`}
+    >
       <div className="flex items-center gap-x-2.5 text-sm mb-2.5">
         <span>
-          <CircleUserRound size={26} strokeWidth={1} color="black" />
+          {/* <CircleUserRound size={26} strokeWidth={1} color="black" /> */}
+          <User size="small" />
         </span>
         <span className="font-normal">
           {data?.createdByUser?.firstname + " " + data?.createdByUser?.lastname}
@@ -65,7 +111,7 @@ const BlogCard = ({ data, isBlogLikedByUser }: any) => {
           |&nbsp;&nbsp;&nbsp;{data?.createdAt}
         </span>
       </div>
-      <h2 className="text-xl font-bold mb-1">
+      <h2 className="text-xl font-bold mb-1 hover:text-primary transition-colors">
         <Link
           href={{
             pathname: `/${data?.title}`,
@@ -79,8 +125,8 @@ const BlogCard = ({ data, isBlogLikedByUser }: any) => {
         <p className="">{data?.description}</p>
         <span></span>
       </div>
-      <div className="flex mb-2.5">
-        <div className="flex gap-x-2.5 items-center *:cursor-pointer">
+      <div className="w-full flex mb-2.5">
+        <div className="w-full flex gap-x-2.5 items-center *:cursor-pointer">
           <span
             onClick={() => {
               likeBlog(data?.id);
@@ -105,9 +151,24 @@ const BlogCard = ({ data, isBlogLikedByUser }: any) => {
               {data?.countOfComments}
             </span>
           </Link>
-          <span>
+          <span
+            onClick={() => {
+              onClickShare(data?.title, data?.id);
+            }}
+          >
             <Send size={20} color="#2b2c34" strokeWidth={1} />
           </span>
+          {data && data?.isMyBlogs && (
+            <div className="flex justify-end items-center flex-1">
+              <span
+                onClick={() => {
+                  deleteBlog(data?.id);
+                }}
+              >
+                <Trash2 size={18} color="red" strokeWidth={1.5} />
+              </span>
+            </div>
+          )}
         </div>
         <div></div>
       </div>
