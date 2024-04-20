@@ -10,6 +10,7 @@ import {
   CircleUserRound,
   FilterX,
   MessageCircle,
+  PenLine,
   Plus,
   Send,
   SlidersHorizontal,
@@ -181,6 +182,10 @@ export default function Home() {
   const [blogForm, setBlogForm] = useState(initialValues);
   const [activity, setActivity] = useState<any>([]);
   const [authors, setAuthors] = useState<any>([]);
+  const [mobileFilterVisibility, setMobileFilterVisibility] =
+    useState<boolean>(false);
+  const [mobileFormVisibility, setMobileFormVisibility] =
+    useState<boolean>(false);
 
   const { session } = useAuth();
 
@@ -234,6 +239,7 @@ export default function Home() {
       );
       setData(response?.data?.data);
       setFilteredData(response?.data?.data);
+      setMobileFormVisibility(false);
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -345,9 +351,23 @@ export default function Home() {
 
   return (
     <main className="w-full flex flex-col">
-      <main className="w-full flex-1 flex flex-col sm:flex-row justify-center py-10">
+      <main className="w-full flex-1 flex flex-col sm:flex-row justify-center py-0 pb-5 sm:pb-0 sm:py-10">
         {filteredData.length > 0 ? (
           <section className="w-full px-[25px] sm:px-0 sm:w-[300px] md:w-[500px] xl:w-[700px]">
+            <div className="w-full flex sm:hidden items-center justify-end my-5 sticky top-20">
+              <button
+                className="px-3 py-1.5 flex items-center gap-x-2 rounded-full bg-primary"
+                onClick={() => {
+                  setMobileFormVisibility(!mobileFormVisibility);
+                  setMobileFilterVisibility(false);
+                }}
+              >
+                <PenLine size={14} color="white" />
+                <span className="font-medium text-sm text-light">
+                  Post New Blog
+                </span>
+              </button>
+            </div>
             {filteredData?.map((item: any, index: number) => {
               const createdAt = convertDate(item?.createdAt);
 
@@ -355,18 +375,16 @@ export default function Home() {
                 (like: any) => parseInt(like.blogId) == parseInt(item.id)
               );
 
-              // console.log("isBlogLikedByUser :::", isBlogLikedByUser);
               return (
                 <>
                   <BlogCard
-                    key={item?.id}
+                    key={index}
                     data={{
                       ...item,
                       createdAt,
                       isBlogLikedByUser,
                     }}
                   />
-                  {/* <div className="w-full h-[1px] bg-primary opacity-35 mt-7 mb-4"></div> */}
                 </>
               );
             })}
@@ -380,7 +398,11 @@ export default function Home() {
         )}
         <div className="w-[1px] bg-[#f1b14359] opacity-35 mx-10 "></div>
         <section className="w-full px-[25px] sm:px-0 sm:w-[250px] xl:w-[350px] flex flex-col items-start">
-          <div className="w-full flex flex-col items-start gap-y-5">
+          <div
+            className={`fixed bottom-[110px] left-[5%] p-5 z-50 rounded-md shadow sm:shadow-none w-[90%] sm:rounded-none sm:relative sm:bottom-0 sm:left-0 sm:z-0 sm:p-0 sm:w-full ${
+              mobileFilterVisibility ? "flex" : "hidden"
+            } sm:flex flex-col items-start gap-y-5 bg-light`}
+          >
             <div className="flex gap-x-1 items-center self-start">
               <h2 className="font-semibold">Filters</h2>
               <SlidersHorizontal size={16} />
@@ -444,10 +466,9 @@ export default function Home() {
                 onChange={(e) => {
                   searchByAuthor(e.target.value);
                 }}
+                defaultValue=""
               >
-                <option value="" selected>
-                  Author
-                </option>
+                <option value="">Author</option>
                 {authors?.map((item: any, index: number) => {
                   return (
                     <option key={index} value={item}>
@@ -468,8 +489,12 @@ export default function Home() {
               </button>
             </form>
           </div>
-          <div className="w-full h-[1px] bg-primary opacity-35 my-10"></div>
-          <div className="w-full flex flex-col items-start gap-y-5">
+          <div className="w-full hidden sm:flex h-[1px] bg-primary opacity-35 my-10"></div>
+          <div
+            className={`fixed top-[130px] left-[5%] p-5 z-50 rounded-md shadow sm:shadow-none w-[90%] sm:rounded-none sm:relative sm:top-0 sm:left-0 sm:z-0 sm:p-0 sm:w-full ${
+              mobileFormVisibility ? "flex" : "hidden"
+            } sm:flex flex-col items-start gap-y-5 bg-light`}
+          >
             <div className="flex gap-x-1 items-center self-start">
               <h2 className="font-semibold">Post Your Blog</h2>
               <BookPlus size={16} />
@@ -513,7 +538,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-          <div className="w-full h-[1px] bg-primary opacity-35 my-10"></div>
+          <div className="w-full hidden sm:flex h-[1px] bg-primary opacity-35 my-10"></div>
           {data.length > 0 && (
             <div className="w-full flex flex-col items-start gap-y-5">
               <div className="flex gap-x-1 items-center self-start">
@@ -591,6 +616,16 @@ export default function Home() {
             </div>
           )}
         </section>
+
+        <button
+          className="w-[50px] aspect-square rounded-full flex sm:hidden items-center justify-center bg-primary shadow fixed bottom-[30px] right-[30px]"
+          onClick={() => {
+            setMobileFilterVisibility(!mobileFilterVisibility);
+            setMobileFormVisibility(false);
+          }}
+        >
+          <SlidersHorizontal color="white" />
+        </button>
       </main>
     </main>
   );

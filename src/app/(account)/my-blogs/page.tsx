@@ -323,8 +323,8 @@ export default function Home() {
                     data={{
                       ...item,
                       createdByUser: {
-                        firstname: session.firstname,
-                        lastname: session.lastname,
+                        firstname: session?.firstname || "Guest",
+                        lastname: session?.lastname || "",
                       },
                       createdAt,
                       isBlogLikedByUser,
