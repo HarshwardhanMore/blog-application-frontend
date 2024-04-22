@@ -1,30 +1,14 @@
 "use client";
 
-import LoginPage from "@/components/auth/LoginPage";
-import RegisterPage from "@/components/auth/RegisterPage";
 import BlogCard from "@/components/blog/BlogCard";
-import Link from "next/link";
 import {
-  BookPlus,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  CircleUserRound,
-  FilterX,
-  MessageCircle,
-  Plus,
-  Search,
-  Send,
-  SlidersHorizontal,
-  ThumbsUp,
-  UserRound,
+  ChevronDown, ChevronUp, FilterX, Search
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getToken } from "@/helpers/Auth";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "@/helpers/Authorize";
-import { redirect } from "next/navigation";
 
 const convertDate = (dateStr: any) => {
   // Parse the input date string
@@ -73,7 +57,7 @@ export default function Home() {
   const getBlogsData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/blog/getMyBlogs",
+        "http://localhost:9000/api/blog/getMyBlogs",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -94,7 +78,7 @@ export default function Home() {
   const getMyActivity = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/auth/getMyActivity",
+        "http://localhost:9000/api/auth/getMyActivity",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

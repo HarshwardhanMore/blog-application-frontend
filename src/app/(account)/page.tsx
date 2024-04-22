@@ -1,26 +1,22 @@
 "use client";
 
-import LoginPage from "@/components/auth/LoginPage";
-import RegisterPage from "@/components/auth/RegisterPage";
 import BlogCard from "@/components/blog/BlogCard";
 import Link from "next/link";
 import {
   BookPlus,
-  ChevronRight,
-  CircleUserRound,
-  FilterX,
+  ChevronRight, FilterX,
   MessageCircle,
   PenLine,
   Plus,
   Send,
   SlidersHorizontal,
   ThumbsUp,
-  UserRound,
+  UserRound
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { getSession, getToken } from "@/helpers/Auth";
+import { getToken } from "@/helpers/Auth";
 import { useAuth } from "@/helpers/Authorize";
 
 // const data = [
@@ -194,7 +190,7 @@ export default function Home() {
   const postsBlogData = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/blog/create",
+        "http://localhost:9000/api/blog/create",
         { ...blogForm, createdByUserId: session?.id },
         {
           headers: {
@@ -230,7 +226,7 @@ export default function Home() {
   const getBlogsData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/blog/getAllBlogs",
+        "http://localhost:9000/api/blog/getAllBlogs",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -247,7 +243,7 @@ export default function Home() {
   const getMyActivity = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/auth/getMyActivity",
+        "http://localhost:9000/api/auth/getMyActivity",
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -350,7 +346,7 @@ export default function Home() {
   // console.log(getSession());
 
   return (
-    <main className="w-full flex flex-col">
+    <main className="w-full flex flex-col sm:pb-10">
       <main className="w-full flex-1 flex flex-col sm:flex-row justify-center py-0 pb-5 sm:pb-0 sm:py-10">
         {filteredData.length > 0 ? (
           <section className="w-full px-[25px] sm:px-0 sm:w-[300px] md:w-[500px] xl:w-[700px]">
@@ -390,7 +386,7 @@ export default function Home() {
             })}
           </section>
         ) : (
-          <div className="w-full text-center text-gray-300 px-[25px] sm:px-0 sm:w-[550px] md:w-[700px] xl:w-[700px]">
+          <div className="w-full mt-5 sm:mt-0 text-center text-gray-300 px-[25px] sm:px-0 sm:w-[550px] md:w-[700px] xl:w-[700px]">
             {data.length > 0
               ? `No Result Found!`
               : `No One Has Published Blogs Yet.!`}

@@ -1,11 +1,10 @@
 import {
-  CircleUserRound,
   MessageCircle,
   Send,
   ThumbsUp,
-  Trash2,
+  Trash2
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -37,7 +36,7 @@ const BlogCard = ({ data }: any) => {
   const likeBlog = async (blogid: any) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/blog/like",
+        "http://localhost:9000/api/blog/like",
         {
           blogid,
         },
@@ -62,7 +61,7 @@ const BlogCard = ({ data }: any) => {
   const deleteBlog = async (id: any) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/blog/delete",
+        "http://localhost:9000/api/blog/delete",
         {
           id,
         },

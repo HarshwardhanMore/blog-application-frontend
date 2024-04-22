@@ -4,12 +4,10 @@ import CommentCard from "@/components/blog/CommentCard";
 import { getToken } from "@/helpers/Auth";
 import axios from "axios";
 import {
-  ArrowLeft,
-  CircleUserRound,
-  MessageCircle,
+  ArrowLeft, MessageCircle,
   Send,
   SendHorizonal,
-  ThumbsUp,
+  ThumbsUp
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -113,7 +111,7 @@ const Page = () => {
   const getBlogsData = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/blog/getBlogDetailsById",
+        "http://localhost:9000/api/blog/getBlogDetailsById",
         { blogid: parseInt(blogid!) },
         {
           headers: {
@@ -137,7 +135,7 @@ const Page = () => {
   const postComment = async (data: any) => {
     try {
       const response: any = await axios.post(
-        "http://localhost:3000/api/blog/comment",
+        "http://localhost:9000/api/blog/comment",
         data,
         {
           headers: {

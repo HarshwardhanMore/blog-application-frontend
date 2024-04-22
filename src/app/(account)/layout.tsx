@@ -1,15 +1,7 @@
 "use client";
 
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import { Bolt, CircleUserRound, LogOut, StickyNote } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-import { deleteToken } from "@/helpers/Auth";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/helpers/Authorize";
-import toast from "react-hot-toast";
 
 import NavBar from "@/components/NavBar";
 

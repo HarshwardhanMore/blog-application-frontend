@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { checkSessionExpired, getSession, getToken } from "./Auth";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   isAuthenticated: boolean;

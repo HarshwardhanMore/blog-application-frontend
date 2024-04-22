@@ -1,14 +1,14 @@
 "use client";
 
 import { Check, ChevronRight, LogIn, X } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { getToken, setToken } from "@/helpers/Auth";
+import { setToken } from "@/helpers/Auth";
 import { useAuth } from "@/helpers/Authorize";
 import { toast } from "react-hot-toast";
 
-const BACKEND_URI = "http://localhost:3000/api";
+const BACKEND_URI = "http://localhost:9000/api";
 
 const validateEmail = (email: string) => {
   const re =
@@ -78,7 +78,7 @@ const LoginPage = () => {
   const submitForm = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
+        "http://localhost:9000/api/auth/login",
         loginForm
       );
       if (response.status == 200 && response?.data.error == false) {

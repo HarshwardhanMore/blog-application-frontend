@@ -1,12 +1,12 @@
 "use client";
 
 import { Check, ChevronRight, LogIn, X } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const BACKEND_URI = "http://localhost:3000/api"
+const BACKEND_URI = "http://localhost:9000/api";
 
 const validateEmail = (email: string) => {
   const re =
@@ -89,7 +89,7 @@ const RegisterPage = () => {
   const submitForm = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/auth/register`,
+        `http://localhost:9000/api/auth/register`,
         registerForm
       );
       console.log("response : ", response);
@@ -107,7 +107,7 @@ const RegisterPage = () => {
 
   return (
     <div className="w-full space-y-10 bg-light px-5 sm:px-10 py-10 rounded-xl">
-      <div className="text-center space-y-1">        
+      <div className="text-center space-y-1">
         <div className="flex items-center gap-x-1 w-full justify-center">
           <img src="/appendix-star.png" alt="" className="h-8" />
           <h2 className="text-2xl font-semibold">Register Here</h2>

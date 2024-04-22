@@ -1,4 +1,3 @@
-import { CircleUserRound } from "lucide-react";
 import User from "../User";
 
 const CommentCard = ({ data }: any) => {

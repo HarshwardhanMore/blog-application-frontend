@@ -1,10 +1,7 @@
 "use client";
 
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "../helpers/AuthProvider";
-import ProtectedRoute from "../helpers/ProtectedRoute";
 import { Authorize } from "@/helpers/Authorize";
 import { Toaster } from "react-hot-toast";
 
